@@ -1,0 +1,56 @@
+.heading8{
+    text-align: center;
+    font-size: 30px;
+    color: black;
+    font-weight: bold;
+    margin-top: 60px;
+}
+.heading8 span{
+    color: #b2744c;
+}
+
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .content {
+    margin-bottom: 20px;
+  }
+  
+  .user-details {
+    margin-bottom: 20px;
+  }
+  
+  .input-box {
+    margin-bottom: 15px;
+  }
+  
+  .input-box label {
+    display: flex;
+    margin-bottom: 5px;
+  }
+  
+  .input-box input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .button input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .button input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  

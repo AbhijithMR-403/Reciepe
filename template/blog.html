@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{%block title%}
+
+Blog
+{% endblock %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet"
+  href="{% static '/css/blog.css'%}">
+
+</head>
+
+<section class="gfbg">
+    <div class="container flex">
+        <div class="greenworld flex">
+            <img src="/static/images/greenworld.png/" alt="">
+            <div class="gfinfo">
+                <span>Vegen</span>
+                <h1>Green World</h1>
+                <p>Contrary to popular belief, Lorem Ipsum is not simply random text.</p>
+                <a href="/">CLICK HERE <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+        </div>
+        <div class="fruitworld flex">
+            <img src="/static/images/fruity-world.png/" alt="">
+            <div class="gfinfo">
+                <span>Desserts</span>
+                <h1>Fruity World</h1>
+                <p>Contrary to popular belief, Lorem Ipsum is not simply random text.</p>
+                <a href="/">CLICK HERE <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            
+        </div>
+
+    </div>
+</section>
+{%endblock%}

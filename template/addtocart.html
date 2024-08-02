@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{%block title%}
+
+Cart
+{% endblock %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet"
+  href="{% static '/css/sell.css'%}">
+
+</head>
+
+<div class="cart">
+    <h1>Your Shopping Cart</h1>
+  
+    <div class="row">
+        {% for item in cart_items %}
+            <div class="col-md-3">
+                <div class="card mb-4 box-shadow">
+                    <img class="card-img-top" src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.product.name }}</h5>
+                        <p class="card-text">Quantity: {{ item.quantity }}</p>
+                        <p class="card-text">Price: ${{ item.product.price }}</p>
+                        <p class="card-text"> Item total amount: ${{item.total_amount}}</p>
+                        <!-- Add more details as needed -->
+  
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"><a href="{% url 'remove_cart_item' item.id %}">Remove</a></button>
+                             
+                                <form action="{% url 'buynow' item.id %}" method="GET">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Buy Now</button>
+                                </form>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+
+
+
+{%endblock%}

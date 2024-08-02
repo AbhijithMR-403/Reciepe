@@ -1,0 +1,350 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+
+      {% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static '/css/base.css' %}" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
+    <!-- Default theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
+  </head>
+  <body>
+    <header>
+      <div class="topnav">
+        <div class="container flex">
+          <div class="navicons flex">
+            <a href="/"><i class="fa-brands fa-twitter"></i></a>
+            <a href="/"><i class="fa-brands fa-facebook"></i></a>
+            <a href="/"><i class="fa-brands fa-instagram"></i></a>
+            <a href="/"><i class="fa-brands fa-youtube"></i></a>
+            <a href="/"><i class="fa-brands fa-pinterest"></i></a>
+          </div>
+
+          <!-- <a href="/" class="srbtn">Submit Recipe <i class="fa-solid fa-plus"></i></a> -->
+        </div>
+      </div>
+      <div class="mainnav">
+        <div class="container flex">
+          <div class="logo flex">
+            <img src="/static/images/logo123.png/" alt="" />
+            <h1>Recipe Blog</h1>
+          </div>
+          <ul class="navlist flex">
+            <li>
+              <a href="/base/">Home</a>
+            </li>
+            <li>
+              <a href="/contact/">AboutUs</a>
+            </li>
+            <li>
+              <a href="/viewrecipe/">View Recipes</a>
+            </li>
+            {% if user.is_authenticated %}
+              <li>
+                <a href="/categories/">Categories</a>
+              </li>
+              <!-- <li><a href="/blog/">Blog</a></li> -->
+              <li>
+                <a href="/sellrecipe/">Sell</a>
+              </li>
+              <li>
+                <a href="/recipe/">Upload</a>
+              </li>
+              <li>
+                <a href="/reviews/">Reviews</a>
+              </li>
+
+              <!-- <li><a href="/hotel/">Hotel</a></li> -->
+              <li>
+                <a href="/register/logout/"><i class="fa-solid fa-power-off"></i>Logout</a>
+              </li>
+              <li>
+                <a href="/addtocart/"><i class="fa-solid fa-cart-shopping"></i></a>
+              </li>
+            {% else %}
+              <li>
+                <a href="/register/"><i class="fa-solid fa-right-to-bracket"></i>SignUp</a>
+              </li>
+              <li>
+                <a href="/register/login/"><i class="fa-solid fa-user"></i>Login</a>
+              </li>
+            {% endif %}
+          </ul>
+          <div class="searchbar flex">
+            <input type="checkbox" name="check-toggle" id="checkbox" hidden="" />
+            <label for="checkbox" class="toggle"><div class="toggle__circle"></div></label>
+            <i class="fa-solid fa-magnifying-glass" id="searchopen"></i>
+            <div class="navonoff">
+              <input type="checkbox" id="checkbox2" />
+              <label for="checkbox2" class="toggle2">
+                <div class="bar bar--top"></div>
+                <div class="bar bar--midddle"></div>
+                <div class="bar bar--bottom"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {% block content %}
+      <main>
+        <section class="headering">
+          <div class="container">
+            <div class="headerinfo flex">
+              <h1 class="headertitle">Browny Cookies</h1>
+              <p class="headerpera">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+              <a href="/" class="headerbtn">VIEW RECIPE<i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </section>
+        <!--    
+        <section class="headerslider container">
+            <div class="slidertitle flex">
+                <h4>My Latest Recipes</h4>
+                <div class="sliderlfbtn">
+                    <button id="sleft"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button id="sright"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </section>
+            <div class="headercards flex">
+                <div class="headercard flex">
+
+                    <img src="/static/images/cookies-7.jpg/" alt="">
+                    <div class="headerinfo">
+
+                        <span>Advanced</span>
+                        <h3>Browny Cookies</h3>
+                    </div>
+                
+                </div>
+                <div class="headercard flex">
+
+                    <img src="/static/images/cookies-7.jpg/" alt="">
+                    <div class="headerinfo">
+
+                        <span>Advanced</span>
+                        <h3>Browny Cookies</h3>
+                    </div>
+                
+                </div>
+                <div class="headercard flex">
+
+                    <img src="/static/images/cookies-7.jpg/" alt="">
+                    <div class="headerinfo">
+
+                        <span>Advanced</span>
+                        <h3>Browny Cookies</h3>
+                    </div>
+                
+                </div>
+
+            </div>
+
+        </div>
+        </section>     -->
+        <section class="threecards container flex">
+          <div class="tcard">
+            <div class="tcarding">
+              <img src="/static/images/post1.jpg/" alt="" />
+              <span class="fa fa-star"></span>
+            </div>
+            <div class="tcardinfo flex">
+              <label class="tlabel">Salad</label>
+              <h2 class="abc">Sunday Best Fruit Salad With Best Recipe</h2>
+              <div class="star-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+              </div>
+              <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
+              <ul class="flex">
+                <li>
+                  <i class="fa-solid fa-user"></i>by
+                </li>
+                <li>
+                  <i class="fa-regular fa-clock"></i>10 Mins
+                </li>
+                <li>
+                  <i class="fa-solid fa-heart"></i>25 Like
+                </li>
+              </ul>
+              <a href="/" class="tcardbtn">Read More</a>
+            </div>
+          </div>
+
+          <div class="tcard">
+            <div class="tcarding">
+              <img src="/static/images/post2.jpg/" alt="" />
+              <span class="fa fa-star"></span>
+            </div>
+            <div class="tcardinfo flex">
+              <label class="tlabel">Dinner</label>
+              <h2 class="abc">Sunday Best Fruit Salad With Best Recipe</h2>
+              <div class="star-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star"></span>
+                <span class="fa fa-star"></span>
+              </div>
+              <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
+              <ul class="flex">
+                <li>
+                  <i class="fa-solid fa-user"></i>by
+                </li>
+                <li>
+                  <i class="fa-regular fa-clock"></i>16 Mins
+                </li>
+                <li>
+                  <i class="fa-solid fa-heart"></i>20 Like
+                </li>
+              </ul>
+              <a href="/" class="tcardbtn">Read More</a>
+            </div>
+          </div>
+
+          <div class="tcard">
+            <div class="tcarding">
+              <img src="/static/images/post3.jpg/" alt="" />
+              <span class="fa fa-star"></span>
+            </div>
+            <div class="tcardinfo flex">
+              <label class="tlabel">Maggie</label>
+              <h2 class="abc">Sunday Best Fruit Salad With Best Recipe</h2>
+              <div class="star-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star"></span>
+              </div>
+              <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
+              <ul class="flex">
+                <li>
+                  <i class="fa-solid fa-user"></i>by
+                </li>
+                <li>
+                  <i class="fa-regular fa-clock"></i>15 Mins
+                </li>
+                <li>
+                  <i class="fa-solid fa-heart"></i>28 Like
+                </li>
+              </ul>
+              <a href="/" class="tcardbtn">Read More</a>
+            </div>
+          </div>
+        </section>
+      </main>
+    {% endblock %}
+
+    <footer>
+      <div class="footer flex">
+        <div class="footerlogo">
+          <h1>Recipe Blog</h1>
+          <p>I Provide new recipes with a twist on daily basis. I also post blog bosts about fun ideas to do in the kitchen</p>
+
+          <div class="fsocial">
+            <a href="" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+            <a href="" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+            <a href="" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+
+        <div class="footernav">
+          <h3>Recipes</h3>
+          <ul class="flex">
+            <li>
+              <a href="/">Breakfast</a>
+            </li>
+            <li>
+              <a href="/">Desserts</a>
+            </li>
+            <li>
+              <a href="/">Dinner</a>
+            </li>
+            <li>
+              <a href="/">Diary</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="footernav">
+          <h3>Legal</h3>
+
+          <ul class="flex">
+            <li>
+              <a href="/">Privacy Policy</a>
+            </li>
+            <li>
+              <a href="/">Refund Policy</a>
+            </li>
+            <li>
+              <a href="/">Cookie Policy</a>
+            </li>
+            <li>
+              <a href="/">Terms and Conditions</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex">
+        <h5 class="xyz">&copy; 2024 Recipe Blog All Rights Reserved</h5>
+      </div>
+    </footer>
+
+    <script type="text/javascript" src="{% static '/js/base.js' %}"></script>
+
+    {% comment %} {% for message in messages %}
+      {% endcomment %}
+
+      {% comment %} <script>
+      alert('{{message}}');
+    </script> {% endcomment %}
+      {% comment %}
+    {% endfor %} {% endcomment %}
+
+    <!-- altertify -->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {% comment %} <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script> {% endcomment %}
+    <script>
+
+        alertify.set('notifier','position', 'top-center');
+
+        {% for msg in messages %}
+        {% if msg.tags == 'success' %}
+            alertify.success('{{ msg }}');
+        {% elif msg.tags == 'error' %}
+            alertify.error('{{ msg }}');
+        {% elif msg.tags == 'info' %}
+        console.log('thi reach here some where in universe isty')
+            alertify.message('{{ msg }}');
+        {% else %}
+        console.log('thi reach her for msg')
+            alertify.success('{{ msg }}');
+        {% endif %}
+        {%endfor%}
+      
+    </script>
+  </body>
+</html>

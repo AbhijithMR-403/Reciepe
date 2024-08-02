@@ -1,0 +1,5 @@
+.dark{
+    --bg-dark: #0c121a;
+    background-color: var(--bg-dark);
+    color: #fff;
+}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Sell
+{% endblock %}
+
+{% block content %}
+  <head>
+    <link rel="stylesheet" href="{% static '/css/sell.css' %}" />
+  </head>
+
+  <h1 class="recipes-heading mt-4">Your Recipes</h1><hr>
+
+
+  {% for i in sell %}
+    <section class="categoriescards container flex">
+      <div class="filtercards flex">
+        <div class="tcard">
+          <div class="tcarding">
+            <img style="height: 300px; width: 300px; object-fit: cover;" src="{{ i.image.url }}" alt="{{ recipe.title }}" />
+            <span class="fa fa-star"></span>
+          </div>
+          <div class="tcardinfo flex">
+            <label class="tlabel">Food</label>
+            <h1>{{ i.name }}</h1>
+            <div class="star-rating">
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+            </div>
+            <p>{{ i.description }}</p>
+            <h2>{{ i.price }}</h2>
+            <div class="card-actions">
+              <form class="cart" method="post" action="{% url 'add_to_cart' product_id=i.id %}">
+                {% csrf_token %}
+
+                <button type="submit" class="bt_main">Add to cart</button>
+              </form>
+            </div>
+            <ul class="flex">
+              <li>
+                <i class="fa-solid fa-user"></i>by
+              </li>
+              <li>
+                <i class="fa-regular fa-clock"></i>10 Mins
+              </li>
+              <li>
+                <i class="fa-solid fa-heart"></i>25 Like
+              </li>
+            </ul>
+
+            <a href="/register/loginnn/" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endfor %}
+{% endblock %}

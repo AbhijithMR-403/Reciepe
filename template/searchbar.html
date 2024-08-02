@@ -1,0 +1,13 @@
+{% if results %}
+    <h2>Search Results</h2>
+    <ul>
+        {% for recipe in results %}
+            <li><h1>{{ recipe.title }}</h1><br>
+                <img style="height: 200px; width: 200px; object-fit: cover;" src="{{recipe.image.url}}"><br>
+                <h4>{{ recipe.description}}</h4>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h1>No results found</h1>
+{% endif %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{%block title%}
+
+Blog
+{% endblock %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet"
+  href="{% static '/css/blog.css'%}">
+
+</head>
+
+
+
+
+<div class="container mt-5 mb-5 text-center">
+    <h1>Payment</h1>
+    <p>Total Amount to Pay for {{ cart_item.product.name }}: ${{ total_amount }}</p>
+
+    <!-- Add a form or button to proceed to payment processing -->
+    <!-- <form method="post" action="">
+        {% csrf_token %}
+         <br><br>
+        <button type="submit" >Proceed to Pay</button>
+    </form> -->
+    <form id="paymentForm">
+        {% csrf_token %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+        data-key="{{ razorpay_api_key }}"
+        data-amount="{{ total_amount }}"
+        data-name="Niture"
+        data-description="{{cart_item.product.name}}"
+        data-image=""
+        data-prefill.name="{{user.username}}"
+        data-prefill.email="{{user.email}}"
+        data-theme.color="#F37254">
+</script>
+        <input type="hidden" custom="Hidden Element" name="hidden">
+    </form>
+</div>

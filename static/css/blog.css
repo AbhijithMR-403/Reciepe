@@ -1,0 +1,118 @@
+.gfbg{
+    position: relative;
+    background: url('/static/images/fruit-salads-in-plate.jpg/') no-repeat center center/cover;
+    width: 100%;
+    height: 45vh;
+    margin-top: 8rem;
+}
+
+.gfbg .container{
+    height: 100%;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.greenworld, .fruitworld{
+    position: relative;
+    width: 48%;
+    height: 70%;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-wrap: wrap;
+    padding: 28px;
+}
+
+.greenworld img,
+.fruitworld img{
+    width: 240px;
+    position: absolute;
+    right: -50px;
+    bottom: 0;
+}
+
+.fruitworld img{
+    width: 320px;
+    right: -120px;
+}
+
+.gfinfo{
+    max-width: 60%;
+}
+
+.gfinfo span{
+    display: inline-block;
+    padding: 8px 12px;
+    color: #85b7c2;
+    background-color: #dde6ce;
+    border-radius: 8px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    font-size: 13px;
+}
+
+.fruitworld:nth-child(2) span{
+    color: #ff6767;
+    background-color: #ffdbdb;
+}
+
+.gfinfo h1{
+    font-size: 35px;
+    line-height: 43px;
+    font-family: "Playfair Display", sans-serif;
+    margin: 0 0 20px;
+    font-weight: 700;
+    color: #1d2228;
+    margin-bottom: 35px;
+}
+
+.gfinfo p{
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 28px;
+    margin-bottom: 15px;
+    color: #515151;
+}
+
+.gfinfo a{
+    box-shadow: 4px 3px 4px rgba(133, 183, 44, .5);
+    padding: 13px 30px;
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    position: relative;
+    background-color: #85b72c;
+    line-height: 24px;
+    border: 0;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 8px;
+    z-index: 1;
+}
+
+.fruitworld .gfinfo a{
+    background-color: #ff6767;
+    box-shadow: 0 3px 24px rgba(255, 103, 103, .5);
+}
+
+.gfinfo a::before{
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #1111112a;
+    border-radius: 8px;
+    z-index: -1;
+    transform: scale(0);
+    transition: 0.3s ease-in-out;
+}
+
+.gfinfo a:hover::before{
+    transform: scale(1);
+}
