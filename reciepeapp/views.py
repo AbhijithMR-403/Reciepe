@@ -5,6 +5,9 @@ from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Recipe, CartItem, Order, ShoppingCart
 from .forms import RecipeForm
+from django.contrib import messages
+from django.contrib.auth.models import User
+
 
 # Create your views here.
 
@@ -59,12 +62,12 @@ def addtocart(request):
 
 def sellrecipe(request):
     dict_sell = {
-        'sell': Recipe.objects.all()
+        'sell': Recipe.objects.filter(user=request.user)
     }
     return render(request, 'sellrecipe.html', dict_sell)
 
 
-def recipe_list(request):
+def recipe_upload(request):
     recipes = Recipe.objects.all()
 
     if request.method == 'POST':
@@ -73,16 +76,20 @@ def recipe_list(request):
         image_file = request.FILES.get('image')
         description = request.POST.get('description')
         price = request.POST.get('price')
+        user = request.user
 
         if title and image_file and description:
             try:
                 recipe = Recipe(title=title, image=image_file,
-                                description=description, price=price)
+                                description=description, price=price,
+                                user=User.objects.get(id=user.id))
                 recipe.save()
-                return redirect('recipe_list')
+                messages.success(request, "recipe uploaded")
+                return redirect('recipe_upload')
             except Exception as e:
-                pass
-
+                messages.error(request, e)
+        else:
+            messages.error(request, "Details are not valid")
     context = {
         'recipes': recipes,
     }

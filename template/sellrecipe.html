@@ -2,60 +2,76 @@
 {% load static %}
 
 {% block title %}
-  Sell
+  View Recipes
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/upload.css' %}" />
 {% endblock %}
 
 {% block content %}
-  <head>
-    <link rel="stylesheet" href="{% static '/css/sell.css' %}" />
-  </head>
-
-  <h1 class="recipes-heading mt-4">Your Recipes</h1><hr>
 
 
-  {% for i in sell %}
-    <section class="categoriescards container flex">
-      <div class="filtercards flex">
-        <div class="tcard">
-          <div class="tcarding">
-            <img style="height: 300px; width: 300px; object-fit: cover;" src="{{ i.image.url }}" alt="{{ recipe.title }}" />
-            <span class="fa fa-star"></span>
-          </div>
-          <div class="tcardinfo flex">
-            <label class="tlabel">Food</label>
-            <h1>{{ i.name }}</h1>
-            <div class="star-rating">
-              <span class="fa fa-star checked"></span>
-              <span class="fa fa-star checked"></span>
-              <span class="fa fa-star checked"></span>
-              <span class="fa fa-star checked"></span>
-              <span class="fa fa-star checked"></span>
+<div class="seachinput">
+  <div class="container-xxl pt-4">
+    <form method="GET" action="{% url 'search' %}" class="mb-4 p-6">
+      {% csrf_token %}
+      <div class="input-group rounded">
+        <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+        <span class="input-group-text border-0" id="search-addon">
+          <i class="fas fa-search"></i>
+        </span>
+      </div>
+      
+    </form>
+  </div>
+</div>
+
+<div class="container-lg mt-4">
+    <h1 class="recipes-heading">My Recipes</h1><hr />
+    <div class="row">
+      {% for i in sell %}
+      {% comment %} <section class="categoriescards container flex">
+        <div class="filtercards flex"> {% endcomment %}
+          <div class="col-md-4 mb-4">
+
+          <div class="tcard">
+            <div class="tcarding">
+              <img style="height: 300px; width: 300px; object-fit: cover;" src="{{ i.image.url }}" alt="{{ recipe.title }}" />
+              <span class="fa fa-star"></span>
             </div>
-            <p>{{ i.description }}</p>
-            <h2>{{ i.price }}</h2>
-            <div class="card-actions">
-              <form class="cart" method="post" action="{% url 'add_to_cart' product_id=i.id %}">
-                {% csrf_token %}
-
-                <button type="submit" class="bt_main">Add to cart</button>
-              </form>
+            <div class="tcardinfo flex">
+              <label class="tlabel">Food</label>
+              <h1>{{ i.name }}</h1>
+              {% comment %} If you want to implement Review feature {% endcomment %}
+              {% comment %} <div class="star-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+              </div> {% endcomment %}
+              <p>{{ i.description }}</p>
+              <h2>{{ i.price }}</h2>
+              {% comment %} <ul class="flex">
+                <li>
+                  <i class="fa-solid fa-user"></i>by
+                </li>
+                <li>
+                  <i class="fa-regular fa-clock"></i>10 Mins
+                </li>
+                <li>
+                  <i class="fa-solid fa-heart"></i>25 Like
+                </li>
+              </ul> {% endcomment %}
+  
+              {% comment %} <a href="/register/loginnn/" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a> {% endcomment %}
             </div>
-            <ul class="flex">
-              <li>
-                <i class="fa-solid fa-user"></i>by
-              </li>
-              <li>
-                <i class="fa-regular fa-clock"></i>10 Mins
-              </li>
-              <li>
-                <i class="fa-solid fa-heart"></i>25 Like
-              </li>
-            </ul>
-
-            <a href="/register/loginnn/" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a>
           </div>
         </div>
-      </div>
-    </section>
-  {% endfor %}
+      {% comment %} </section> {% endcomment %}
+    {% endfor %}
+  
+    </div>
+  </div>
 {% endblock %}

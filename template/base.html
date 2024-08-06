@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
     <!-- Default theme -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
+    {% block extra_css %}{% endblock %}
+
   </head>
   <body>
     <header>
@@ -43,22 +45,23 @@
             <h1>Recipe Blog</h1>
           </div>
           <ul class="navlist flex">
+            {% comment %} I have comment out some of the section that I thought of no use {% endcomment %}
             <li>
               <a href="/base/">Home</a>
             </li>
-            <li>
+            {% comment %} <li>
               <a href="/contact/">AboutUs</a>
-            </li>
+            </li> {% endcomment %}
             <li>
-              <a href="/viewrecipe/">View Recipes</a>
+              <a href="/viewrecipe/">Buy</a>
             </li>
             {% if user.is_authenticated %}
-              <li>
+              {% comment %} <li>
                 <a href="/categories/">Categories</a>
-              </li>
+              </li> {% endcomment %}
               <!-- <li><a href="/blog/">Blog</a></li> -->
               <li>
-                <a href="/sellrecipe/">Sell</a>
+                <a href="/sellrecipe/">My Recipe</a>
               </li>
               <li>
                 <a href="/recipe/">Upload</a>
@@ -72,7 +75,7 @@
                 <a href="/register/logout/"><i class="fa-solid fa-power-off"></i>Logout</a>
               </li>
               <li>
-                <a href="/addtocart/"><i class="fa-solid fa-cart-shopping"></i></a>
+                <a href="/view_shopping_cart/"><i class="fa-solid fa-cart-shopping"></i></a>
               </li>
             {% else %}
               <li>
@@ -87,14 +90,14 @@
             <input type="checkbox" name="check-toggle" id="checkbox" hidden="" />
             <label for="checkbox" class="toggle"><div class="toggle__circle"></div></label>
             <i class="fa-solid fa-magnifying-glass" id="searchopen"></i>
-            <div class="navonoff">
+            {% comment %} <div class="navonoff">
               <input type="checkbox" id="checkbox2" />
               <label for="checkbox2" class="toggle2">
                 <div class="bar bar--top"></div>
                 <div class="bar bar--midddle"></div>
                 <div class="bar bar--bottom"></div>
               </label>
-            </div>
+            </div> {% endcomment %}
           </div>
         </div>
       </div>
@@ -337,10 +340,8 @@
         {% elif msg.tags == 'error' %}
             alertify.error('{{ msg }}');
         {% elif msg.tags == 'info' %}
-        console.log('thi reach here some where in universe isty')
             alertify.message('{{ msg }}');
         {% else %}
-        console.log('thi reach her for msg')
             alertify.success('{{ msg }}');
         {% endif %}
         {%endfor%}

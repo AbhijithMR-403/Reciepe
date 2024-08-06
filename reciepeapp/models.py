@@ -9,7 +9,7 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to='images/')
     description = models.TextField()
     price = models.FloatField(default=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_recipe")
 
 
 # class Sellrecipe(models.Model):

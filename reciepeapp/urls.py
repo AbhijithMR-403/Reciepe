@@ -4,7 +4,8 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('categories/', views.categories, name='categories'),
     path('blog/', views.blog, name='blog'),
-    path('recipe/', views.recipe_list, name='recipe'),
+    # upload recipe
+    path('recipe/', views.recipe_upload, name='recipe_upload'),
     path('contact/', views.contact, name='contact'),
     path('base/', views.base, name='base'),
     path('reviews/', views.reviews, name='reviews'),
