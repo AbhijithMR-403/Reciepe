@@ -24,4 +24,7 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
 
+    # rahul added url
+    path('recipeDetail/', views.recipe_detail, name='recipe_detail_page'),
+
 ]
