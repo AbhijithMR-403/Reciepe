@@ -10,23 +10,19 @@
 {% endblock %}
 
 {% block content %}
-
-<div class="seachinput">
-  <div class="container-xl pt-4">
-    <form method="GET" action="{% url 'search' %}" class="mb-4 p-6">
-      {% csrf_token %}
-      <div class="input-group rounded">
-        <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-        <span class="input-group-text border-0" id="search-addon">
-          <i class="fas fa-search"></i>
-        </span>
-      </div>
-      
-    </form>
+  <div class="seachinput">
+    <div class="container-xl pt-4">
+      <form method="GET" action="{% url 'search' %}" class="mb-4 p-6">
+        {% csrf_token %}
+        <div class="input-group rounded">
+          <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+          <span class="input-group-text border-0" id="search-addon"><i class="fas fa-search"></i></span>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 
-<div class="container-lg mt-4">
+  <div class="container-lg mt-4">
     <h1 class="recipes-heading">Recipes</h1><hr />
     <div class="row">
       {% for recipe in recipes %}
@@ -36,7 +32,7 @@
               <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" />
               <span class="fa fa-star"></span>
             </div>
-            <div class="tcardinfo">
+            <div class="tcardinfo flex">
               <label class="tlabel">Food</label>
               <h1>{{ recipe.title }}</h1>
               {% comment %} <div class="star-rating">
@@ -47,10 +43,10 @@
                 <span class="fa fa-star checked"></span>
               </div> {% endcomment %}
               <p>Description: {{ recipe.description }}</p>
-              <p>$ {{ recipe.price }}</p>
+              <p>₹ {{ recipe.price }}</p>
               <div class="text-center mt-3">
                 <!-- Centering the button -->
-                <a href="#" class="btn btn-success catecarbtn">Add Cart <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#" class="btn btn-success catecarbtn add-to-cart-btn" data-product-id="{{ recipe.id }}">Add Cart <i class="fa-solid fa-arrow-right"></i></a>
               </div>
             </div>
           </div>
@@ -58,4 +54,51 @@
       {% endfor %}
     </div>
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Attach click event listeners to all 'Add Cart' buttons
+      document.querySelectorAll('.add-to-cart-btn').forEach(function (button) {
+        button.addEventListener('click', function (event) {
+          event.preventDefault() // Prevent the default link behavior
+          const productId = button.getAttribute('data-product-id')
+          addToCart(productId) // Call the addToCart function with the product ID
+        })
+      })
+    })
+    function addToCart(productId) {
+      $.ajax({
+        url: `/addtocart/${productId}`,
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: getCookie('csrftoken') // Ensure you include CSRF token
+        },
+        success: function (response) {
+          if (response.status === 'success') {
+            alertify.success(response.message)
+            // Update cart UI or perform additional actions here
+          } else if (response.status === 'info') {
+            alertify.message(response.message)
+          }
+        },
+        error: function (xhr) {
+          alert('An error occurred while adding the product to the cart.')
+        }
+      })
+    }
+    
+    function getCookie(name) {
+      let cookieValue = null
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';')
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim()
+          if (cookie.substring(0, name.length + 1) === name + '=') {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+            break
+          }
+        }
+      }
+      return cookieValue
+    }
+  </script>
 {% endblock %}

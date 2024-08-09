@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{%block title%}
+
+Blog
+{% endblock %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="{% static '/css/payment.css' %}">
+
+</head>
+
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="message-box _success _failed">
+                <i class="fa fa-times-circle" aria-hidden="true"></i>
+                <h2>Your payment failed</h2>
+                <p><a href="{% url 'checkout' %}">Try again later.</a></p>
+            </div>
+        </div> 
+    </div>
+</div>
+{% endblock %}

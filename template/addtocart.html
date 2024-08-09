@@ -8,47 +8,155 @@ Cart
 {% endblock %}
 
 {% block content %}
+
 <head>
-    <link rel="stylesheet"
-  href="{% static '/css/sell.css'%}">
+  <link rel="stylesheet" href="{% static '/css/sell.css'%}">
 
 </head>
 
-<div class="cart">
-    <h1>Your Shopping Cart</h1>
-  
-    <div class="row">
-        {% for item in cart_items %}
-            <div class="col-md-3">
-                <div class="card mb-4 box-shadow">
-                    <img class="card-img-top" src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 200px;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ item.product.name }}</h5>
-                        <p class="card-text">Quantity: {{ item.quantity }}</p>
-                        <p class="card-text">Price: ${{ item.product.price }}</p>
-                        <p class="card-text"> Item total amount: ${{item.total_amount}}</p>
-                        <!-- Add more details as needed -->
-  
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"><a href="{% url 'remove_cart_item' item.id %}">Remove</a></button>
-                             
-                                <form action="{% url 'buynow' item.id %}" method="GET">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Buy Now</button>
-                                </form>
-                                
-                            </div>
-                        </div>
+<section class="h-100 h-custom" style="background-color: #d2c9ff;">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12">
+        <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+          <div class="card-body p-0">
+            <div class="row g-0">
+              <div class="col-lg-8">
+                <div class="p-5">
+                  <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h1 class="fw-bold mb-0">Shopping Cart</h1>
+                    <h6 class="mb-0 text-muted">3 items</h6>
+                  </div>
+                  {% for item in cart_items %}
+
+                  <div class="cart-item">
+                    <hr class="my-4">
+
+                    <div class="row mb-4 d-flex justify-content-between align-items-center ">
+                      <div class="col-md-2 col-lg-2 col-xl-2">
+                        <img src={{item.product.image.url}} class="img-fluid rounded-3" alt="Cotton T-shirt">
+                      </div>
+                      <div class="col-md-3 col-lg-3 col-xl-3">
+                        <h6 class="text-muted"> {{ item.product.title }}</h6>
+                      </div>
+                      <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                        <h6 class="mb-0">₹{{ item.product.price }}</h6>
+                      </div>
+                      <div class="col-md-1 col-lg-1 col-xl-1 text-end remove-from-cart-btn"
+                        data-item-id="{{ item.id }}">
+                        <a href="#!" class="text-muted"><i class="fas fa-times"></i></a>
+                      </div>
                     </div>
+                  </div>
+                  {% endfor %}
+
+                  <hr class="my-4">
+
+                  <!-- <div class="pt-5">
+                                        <h6 class="mb-0"><a href="#!" class="text-body"><i
+                                                    class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
+                                    </div> -->
                 </div>
+              </div>
+              <div class="col-lg-4 bg-body-tertiary">
+                <div class="p-5">
+                  <h3 class="fw-bold mb-5 mt-2 pt-1">Summary</h3>
+                  <hr class="my-4">
+                  {% for item in cart_items %}
+
+                  <div class="d-flex justify-content-between mb-4 summary-item" data-item-id="{{ item.id }}">
+                    <h5 class="text-uppercase">{{item.product.title}}</h5>
+                    <h5>₹{{ item.product.price }}</h5>
+                  </div>
+                  {% endfor %}
+
+                  <h5 class="text-uppercase mb-3">Give code</h5>
+
+                  <div class="mb-5">
+                    <div data-mdb-input-init class="form-outline">
+                      <input type="text" id="form3Examplea2" class="form-control form-control-lg" />
+                      <label class="form-label" for="form3Examplea2">Enter your code</label>
+                    </div>
+                  </div>
+
+                  <hr class="my-4">
+
+                  <div class="d-flex justify-content-between mb-5">
+                    <h5 class="text-uppercase">Total price</h5>
+                    <h5 class="total_amount">₹{{ total_amount }}</h5>
+                  </div>
+                  <a href="{% url 'checkout' %}">
+                  <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-block btn-lg"
+                    data-mdb-ripple-color="dark" >Checkout</button>
+                  </a>
+                </div>
+              </div>
             </div>
-        {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
 
+    document.querySelectorAll('.remove-from-cart-btn').forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        const itemId = button.getAttribute('data-item-id');
+        removeFromCart(itemId, button); // Pass the button element
+      });
+    });
+  });
 
+  function removeFromCart(itemId, button) {
+    $.ajax({
+      url: `/remove_cart_item/${itemId}/`,
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': getCookie('csrftoken')
+      },
+      success: function (response) {
+        if (response.status === 'success') {
+          alertify.success(response.message);
+          const cartItem = button.closest('.cart-item');
+          if (cartItem) {
+            cartItem.remove();
+          }
+          // Remove the corresponding summary item element
+          const summaryItem = document.querySelector(`.summary-item[data-item-id='${itemId}']`);
+          if (summaryItem) {
+            summaryItem.remove();
+          }
+          document.querySelector('.total_amount').textContent = `₹${response.total_amount}`;
 
+        } else {
+          alert('An error occurred while removing the item from the cart.');
+        }
+      },
+      error: function (xhr) {
+        alert('An error occurred while removing the item from the cart.');
+      }
+    });
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+</script>
 
 
 {%endblock%}

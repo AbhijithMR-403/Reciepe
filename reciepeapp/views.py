@@ -1,12 +1,16 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
+import razorpay
 from .models import Recipe, CartItem, Order, ShoppingCart
 from .forms import RecipeForm
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.db.models import Sum, F
 
 
 # Create your views here.
@@ -61,8 +65,9 @@ def addtocart(request):
 
 
 def sellrecipe(request):
+    user = request.user
     dict_sell = {
-        'sell': Recipe.objects.filter(user=request.user)
+        'sell': Recipe.objects.filter(user__id=user.id)
     }
     return render(request, 'sellrecipe.html', dict_sell)
 
@@ -97,7 +102,8 @@ def recipe_upload(request):
 
 
 def viewrecipe(request):
-    recipes = Recipe.objects.exclude()
+    user = request.user
+    recipes = Recipe.objects.exclude(user__id=user.id)
     context = {
         'recipes': recipes,
     }
@@ -127,22 +133,59 @@ def edit(request, pk):
 
 
 def add_to_cart(request, product_id):
-    product = get_object_or_404(Recipe, id=product_id)
-    user = request.user
+    if request.method == 'POST':  # Ensure this is a POST request
+        product = get_object_or_404(Recipe, id=product_id)
+        user = request.user
 
-    # check if the user has a cart or create new one for that user
-    shopping_cart, cart_created = ShoppingCart.objects.get_or_create(user=user)
+        # check if the user has a cart or create new one for that user
+        shopping_cart, cart_created = ShoppingCart.objects.get_or_create(
+            user=user)
 
-    # ckeck if the product is in that cart if no  then add product to that cart of that user
-    cart_item, item_created = CartItem.objects.get_or_create(
-        product=product, shopping_cart=shopping_cart)
+        # ckeck if the product is in that cart if no  then add product to that cart of that user
+        cart_item, item_created = CartItem.objects.get_or_create(
+            product=product, shopping_cart=shopping_cart)
 
-    # if the product is already in the cart then add its quantity by 1
-    if not item_created:
-        cart_item.quantity += 1
-        cart_item.save()
+        # if the product is already in the cart then add its quantity by 1
+        if not item_created:
+            return JsonResponse({
+                'status': 'info',
+                'message': 'Product is already added',
+                'product_id': product_id,
+            })
 
-    return redirect('view_shopping_cart')
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Product added to cart',
+            'product_id': product_id,
+        })
+    else:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid request method'
+        }, status=400)
+
+
+def remove_cart_item(request, item_id):
+    if request.method == 'POST':  # Ensure this is a POST request
+        cart_item = get_object_or_404(CartItem, id=item_id)
+        shopping_cart = cart_item.shopping_cart
+        cart_item.delete()
+
+        # Calculate the new total amount
+        cart_items = CartItem.objects.filter(shopping_cart=shopping_cart)
+        total_amount = cart_items.aggregate(total_amount=Sum(F('product__price')))[
+            'total_amount'] or 0
+
+        return JsonResponse({
+            'status': 'success',
+            'total_amount': total_amount,
+            'message': 'Item removed from cart',
+        })
+    else:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid request method'
+        }, status=400)
 
 
 def view_shopping_cart(request):
@@ -153,25 +196,25 @@ def view_shopping_cart(request):
     cart_items = CartItem.objects.filter(shopping_cart=shopping_cart)
 
     for item in cart_items:
-        item.total_amount = item.product.price * item.quantity
+        item.total_amount = item.product.price
 
-    total_quantity = sum(item.quantity for item in cart_items)
+    # total_quantity = sum(item.quantity for item in cart_items)
     total_amount = sum(item.total_amount for item in cart_items)
 
     context = {
         'cart_items': cart_items,
-        'total_quantity': total_quantity,
+        # 'total_quantity': total_quantity,
         'total_amount': total_amount,
     }
 
     return render(request, 'addtocart.html', context)
 
 
-def remove_cart_item(request, item_id):
-    item = get_object_or_404(CartItem, id=item_id)
-    item.delete()
+# def remove_cart_item(request, item_id):
+#     item = get_object_or_404(CartItem, id=item_id)
+#     item.delete()
 
-    return redirect('view_shopping_cart')
+#     return redirect('view_shopping_cart')
 
 
 def search_view(request, results=None):
@@ -204,27 +247,87 @@ def buy_now(request, item_id):
 
     return render(request, 'payment.html', context)
 
-
-@csrf_exempt
-def handle_payment(request):
-    if request.method == 'POST':
-        user = request.user
-        product_name = request.POST.get('product_name')
-        total_amount = request.POST.get('total_amount')
-        payment_id = request.POST.get('payment_id')
-
-        # Save the order
-        order = Order.objects.create(
-            user=user,
-            product_name=product_name,
-            total_amount=total_amount,
-            payment_id=payment_id
-        )
-
-        return JsonResponse({'message': 'Payment successful', 'order_id': order.id})
-
-    return JsonResponse({'message': 'Invalid request'}, status=400)
+razorpay_client = razorpay.Client(
+    auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
 
 
 def checkout(request):
-    return render(request, 'checkout.html')
+    # Get the cart items for the logged-in user
+    cart_items = CartItem.objects.filter(shopping_cart__user=request.user)
+    if not cart_items.exists():
+        messages.info(request, 'Add Item to cart')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('view_shopping_cart')))
+
+    # Calculate the total amount
+    total_amount = sum(item.product.price for item in cart_items)
+    vat_amount = total_amount * 0.18
+    delivery_amount = 4.95
+    # Create a Razorpay Order
+    razorpay_order = razorpay_client.order.create(dict(amount=total_amount*100,
+                                                       currency='INR',
+                                                       payment_capture='0'))
+
+    # order id of newly created order.
+    razorpay_order_id = razorpay_order['id']
+    callback_url = '/paymenthandler/'
+
+
+    context = {
+        'cart_items': cart_items,
+        'total_amount': total_amount + vat_amount + delivery_amount,
+        'vat_amount': vat_amount,
+        'delivery_amount': delivery_amount,
+    }
+    context['razorpay_order_id'] = razorpay_order_id
+    context['razorpay_merchant_key'] = settings.RAZOR_KEY_ID
+    context['razorpay_amount'] = total_amount
+    context['currency'] = 'INR'
+    context['callback_url'] = callback_url
+
+
+    return render(request, 'checkout.html', context)
+
+
+
+@csrf_exempt
+def paymenthandler(request):
+
+    # only accept POST request.
+    if request.method == "POST":
+        print('hey this is you ')
+        try:
+
+            # get the required parameters from post request.
+            payment_id = request.POST.get('razorpay_payment_id', '')
+            razorpay_order_id = request.POST.get('razorpay_order_id', '')
+            signature = request.POST.get('razorpay_signature', '')
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature
+            }
+
+            # verify the payment signature.
+            result = razorpay_client.utility.verify_payment_signature(
+                params_dict)
+            if result is not None:
+                amount = 20000
+                try:
+                    
+                    # render success page on successful caputre of payment
+                    return render(request, 'paymentSuccess.html')
+                except:
+                    print('was that a failure')
+                    # if there is an error while capturing payment.
+                    return render(request, 'paymentFailure.html')
+            else:
+
+                # if signature verification fails.
+                return render(request, 'paymentFailure.html')
+        except:
+
+            # if we don't find the required parameters in POST data
+            return HttpResponseBadRequest()
+    else:
+       # if other than POST request is made.
+        return HttpResponseBadRequest()
