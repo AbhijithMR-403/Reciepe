@@ -7,7 +7,7 @@ urlpatterns = [
     # upload recipe
     path('recipe/', views.recipe_upload, name='recipe_upload'),
     path('contact/', views.contact, name='contact'),
-    path('base/', views.base, name='base'),
+    # path('base/', views.base, name='base'),
     path('reviews/', views.reviews, name='reviews'),
     path('viewrecipe/', views.viewrecipe, name='viewrecipe'),
     path('delete/<pk>', views.delete, name='delete'),
@@ -20,7 +20,6 @@ urlpatterns = [
     path('view_shopping_cart/', views.view_shopping_cart,
          name='view_shopping_cart'),
     path('remove_cart_item/<int:item_id>/', views.remove_cart_item, name='remove_cart_item'),
-    path('buynow/<int:item_id>/', views.buy_now, name='buynow'),
     # path('handle_payment/', views.handle_payment, name='handle_payment'),
     path('checkout/', views.checkout, name='checkout'),
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),

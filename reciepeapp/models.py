@@ -33,8 +33,8 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
-    order_id = models.UUIDField(
-        default=uuid.uuid4, editable=False, unique=True)
+    order_id = models.CharField(
+        default=uuid.uuid4, max_length=90, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
     delivery_address = models.CharField(max_length=255, null=True)

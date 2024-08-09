@@ -4,7 +4,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 import razorpay
-from .models import Recipe, CartItem, Order, ShoppingCart, OrderedProduct
+from .models import Recipe, CartItem, Order, ShoppingCart, OrderedProduct, Payment
 from .forms import RecipeForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -38,10 +38,6 @@ def recipe(request):
 
 def contact(request):
     return render(request, 'contact.html')
-
-
-def base(request):
-    return render(request, 'base.html')
 
 
 def reviews(request):
@@ -136,7 +132,12 @@ def add_to_cart(request, product_id):
     if request.method == 'POST':  # Ensure this is a POST request
         product = get_object_or_404(Recipe, id=product_id)
         user = request.user
-
+        if (OrderedProduct.objects.filter(user=request.user, product=product)):
+            return JsonResponse({
+                'status': 'info',
+                'message': 'You have already brought this Recipe',
+                'product_id': product_id,
+            })
         # check if the user has a cart or create new one for that user
         shopping_cart, cart_created = ShoppingCart.objects.get_or_create(
             user=user)
@@ -232,21 +233,6 @@ def search_view(request, results=None):
     return render(request, 'searchbar.html', context)
 
 
-def buy_now(request, item_id):
-    user = request.user
-    cart_item = get_object_or_404(
-        CartItem, id=item_id, shopping_cart__user=user)
-    total_amount = cart_item.product.price * cart_item.quantity
-
-    context = {
-        'total_amount': total_amount,
-        'cart_item': cart_item,
-        'razorpay_api_key': settings.RAZORPAY_API_KEY,
-        'user': user
-    }
-
-    return render(request, 'payment.html', context)
-
 razorpay_client = razorpay.Client(
     auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
 
@@ -270,9 +256,9 @@ def checkout(request):
     # order id of newly created order.
     razorpay_order_id = razorpay_order['id']
     callback_url = '/paymenthandler/'
-    order = Order.objects.create(
+    order, _ = Order.objects.get_or_create(
+        order_id=razorpay_order_id,
         user=request.user,
-        delivery_address=request.user.profile.address,  # Adjust according to your user model
         total_amount=total_amount,
         status='Pending'
     )
@@ -284,8 +270,6 @@ def checkout(request):
             product=cart_item.product,
             user=request.user
         )
-
-
 
     context = {
         'cart_items': cart_items,
@@ -299,9 +283,7 @@ def checkout(request):
     context['currency'] = 'INR'
     context['callback_url'] = callback_url
 
-
     return render(request, 'checkout.html', context)
-
 
 
 @csrf_exempt
@@ -316,8 +298,6 @@ def paymenthandler(request):
             payment_id = request.POST.get('razorpay_payment_id', '')
             razorpay_order_id = request.POST.get('razorpay_order_id', '')
             signature = request.POST.get('razorpay_signature', '')
-            currency = request.POST.get('currency', '')
-            print(currency)
             params_dict = {
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': payment_id,
@@ -327,23 +307,35 @@ def paymenthandler(request):
             # verify the payment signature.
             result = razorpay_client.utility.verify_payment_signature(
                 params_dict)
-            print(result)
-            print(payment_id)
-            print(razorpay_order_id)
-            print(signature)
-            print(params_dict)
-            order = Order.objects.get(user=request.user)
+            order = Order.objects.get(
+                user=request.user, order_id=razorpay_order_id)
+            print(order.total_amount)
             if result is not None:
-                amount = order.total_amount
+                amount = int(order.total_amount * 100)
+
                 try:
-                    print('did this work')
-                    # capture the payemt
+                    cart_items = CartItem.objects.filter(
+                        shopping_cart__user=request.user)
                     razorpay_client.payment.capture(payment_id, amount)
-                    print(razorpay_client)
+                    Payment.objects.create(
+                        order=order,
+                        user=request.user,
+                        transaction_id=payment_id,
+                        payment_status='Success',
+                        amount=order.total_amount
+                    )
+                    cart_items.delete()
                     # render success page on successful caputre of payment
                     return render(request, 'paymentSuccess.html')
-                except:
-                    print('was that a failure')
+                except Exception as e:
+                    print(e)
+                    Payment.objects.create(
+                        order=order,
+                        user=request.user,
+                        transaction_id=payment_id,
+                        payment_status='Failed',
+                        amount=order.total_amount
+                    )
                     # if there is an error while capturing payment.
                     return render(request, 'paymentFailure.html')
             else:
