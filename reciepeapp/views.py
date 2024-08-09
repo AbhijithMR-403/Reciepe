@@ -4,7 +4,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 import razorpay
-from .models import Recipe, CartItem, Order, ShoppingCart
+from .models import Recipe, CartItem, Order, ShoppingCart, OrderedProduct
 from .forms import RecipeForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -260,8 +260,8 @@ def checkout(request):
 
     # Calculate the total amount
     total_amount = sum(item.product.price for item in cart_items)
-    vat_amount = total_amount * 0.18
-    delivery_amount = 4.95
+    # vat_amount = total_amount * 0.18
+    # delivery_amount = 4.95
     # Create a Razorpay Order
     razorpay_order = razorpay_client.order.create(dict(amount=total_amount*100,
                                                        currency='INR',
@@ -270,13 +270,28 @@ def checkout(request):
     # order id of newly created order.
     razorpay_order_id = razorpay_order['id']
     callback_url = '/paymenthandler/'
+    order = Order.objects.create(
+        user=request.user,
+        delivery_address=request.user.profile.address,  # Adjust according to your user model
+        total_amount=total_amount,
+        status='Pending'
+    )
+
+    # Create OrderedProduct entries
+    for cart_item in cart_items:
+        OrderedProduct.objects.create(
+            order=order,
+            product=cart_item.product,
+            user=request.user
+        )
+
 
 
     context = {
         'cart_items': cart_items,
-        'total_amount': total_amount + vat_amount + delivery_amount,
-        'vat_amount': vat_amount,
-        'delivery_amount': delivery_amount,
+        'total_amount': total_amount,
+        # 'vat_amount': vat_amount,
+        # 'delivery_amount': delivery_amount,
     }
     context['razorpay_order_id'] = razorpay_order_id
     context['razorpay_merchant_key'] = settings.RAZOR_KEY_ID
@@ -301,6 +316,8 @@ def paymenthandler(request):
             payment_id = request.POST.get('razorpay_payment_id', '')
             razorpay_order_id = request.POST.get('razorpay_order_id', '')
             signature = request.POST.get('razorpay_signature', '')
+            currency = request.POST.get('currency', '')
+            print(currency)
             params_dict = {
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': payment_id,
@@ -310,9 +327,19 @@ def paymenthandler(request):
             # verify the payment signature.
             result = razorpay_client.utility.verify_payment_signature(
                 params_dict)
+            print(result)
+            print(payment_id)
+            print(razorpay_order_id)
+            print(signature)
+            print(params_dict)
+            order = Order.objects.get(user=request.user)
             if result is not None:
-                amount = 20000
+                amount = order.total_amount
                 try:
+                    print('did this work')
+                    # capture the payemt
+                    razorpay_client.payment.capture(payment_id, amount)
+                    print(razorpay_client)
                     # render success page on successful caputre of payment
                     return render(request, 'paymentSuccess.html')
                 except:

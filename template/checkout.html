@@ -33,13 +33,13 @@
 
                 <div class='total'>
                     <span style='float:left;'>
-                        <div class='thin dense'>GST 0%</div>
-                        <div class='thin dense'>Delivery</div>
+                        {% comment %} <div class='thin dense'>GST 0%</div>
+                        <div class='thin dense'>Delivery</div> {% endcomment %}
                         TOTAL
                     </span>
                     <span style='float:right; text-align:right;'>
-                        <div class='thin dense'>₹{{ vat_amount }}</div>
-                        <div class='thin dense'>₹{{ delivery_amount }}</div>
+                        {% comment %} <div class='thin dense'>₹{{ vat_amount }}</div>
+                        <div class='thin dense'>₹{{ delivery_amount }}</div> {% endcomment %}
                         ₹{{ total_amount }}
                     </span>
                 </div>

@@ -37,7 +37,7 @@ class Order(models.Model):
         default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
-    delivery_address = models.CharField(max_length=255)
+    delivery_address = models.CharField(max_length=255, null=True)
     status = models.CharField(max_length=50, choices=[(
         'Pending', 'Pending'), ('Shipped', 'Shipped'),
         ('Delivered', 'Delivered')], default='Pending')
@@ -51,6 +51,8 @@ class Order(models.Model):
 
 class Payment(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=255)
     payment_status = models.CharField(
         max_length=50, choices=[('Success', 'Success'), ('Failed', 'Failed')])
@@ -63,7 +65,7 @@ class Payment(models.Model):
 class OrderedProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    # No quantity needed since a person can buy only one of each product
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.product} in order {self.order}"
