@@ -56,6 +56,9 @@ def viewrecipe(request):
     return render(request, 'upload.html')
 
 
+def recipe_detail(request):
+    return render (request, 'recipeDetail.html')
+
 def hotel(request):
     return render(request, 'hotel.html')
 
