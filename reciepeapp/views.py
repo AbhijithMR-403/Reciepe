@@ -313,7 +313,6 @@ def paymenthandler(request):
             if result is not None:
                 amount = 20000
                 try:
-                    
                     # render success page on successful caputre of payment
                     return render(request, 'paymentSuccess.html')
                 except:
