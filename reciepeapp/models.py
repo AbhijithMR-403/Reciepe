@@ -6,10 +6,14 @@ import uuid
 
 
 class Recipe(models.Model):
-    title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='images/')
-    description = models.TextField()
-    price = models.FloatField(default=100)
+    title = models.CharField(max_length=100, null=False)
+    image = models.ImageField(upload_to='images/', null=False)
+    description = models.TextField(null=False)
+    Instructions = models.TextField(null=False)
+    Ingredients = models.TextField(null=False)
+    price = models.FloatField(default=100, null=False)
+    time = models.IntegerField(null=False)
+    
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_recipe")
 

@@ -20,14 +20,6 @@ def home(request):
     return render(request, 'home.html')
 
 
-def categories(request):
-    return render(request, 'categories.html')
-
-
-def blog(request):
-    return render(request, 'blog.html')
-
-
 def register(request):
     return render(request, 'signup.html')
 
@@ -40,8 +32,11 @@ def contact(request):
     return render(request, 'contact.html')
 
 
-def reviews(request):
-    return render(request, 'reviews.html')
+def orderList(request):
+    user = request.user.id
+    orders = OrderedProduct.objects.filter(user=user)
+    print(user)
+    return render(request, 'order.html', {'orders': orders})
 
 
 def login(request):
@@ -53,14 +48,7 @@ def viewrecipe(request):
 
 
 def recipe_detail(request):
-    return render (request, 'recipeDetail.html')
-
-def hotel(request):
-    return render(request, 'hotel.html')
-
-
-def addtocart(request):
-    return render(request, 'addtocart.html')
+    return render(request, 'recipeDetail.html')
 
 
 def sellrecipe(request):
@@ -79,14 +67,18 @@ def recipe_upload(request):
         title = request.POST.get('title')
         image_file = request.FILES.get('image')
         description = request.POST.get('description')
+        instructions = request.POST.get('instructions')
+        ingredients = request.POST.get('ingredients')
+        time = request.POST.get('time')
         price = request.POST.get('price')
         user = request.user
 
         if title and image_file and description:
             try:
-                recipe = Recipe(title=title, image=image_file,
-                                description=description, price=price,
-                                user=User.objects.get(id=user.id))
+                recipe = Recipe(Ingredients=ingredients, title=title,
+                                description=description, image=image_file,
+                                user=User.objects.get(id=user.id), price=price,
+                                Instructions=instructions, time=time)
                 recipe.save()
                 messages.success(request, "recipe uploaded")
                 return redirect('recipe_upload')
@@ -196,13 +188,11 @@ def view_shopping_cart(request):
     user = request.user
     shopping_cart, created = ShoppingCart.objects.get_or_create(user=user)
 
-    # fetch cart details and Cart items
     cart_items = CartItem.objects.filter(shopping_cart=shopping_cart)
 
     for item in cart_items:
         item.total_amount = item.product.price
 
-    # total_quantity = sum(item.quantity for item in cart_items)
     total_amount = sum(item.total_amount for item in cart_items)
 
     context = {
@@ -211,14 +201,7 @@ def view_shopping_cart(request):
         'total_amount': total_amount,
     }
 
-    return render(request, 'addtocart.html', context)
-
-
-# def remove_cart_item(request, item_id):
-#     item = get_object_or_404(CartItem, id=item_id)
-#     item.delete()
-
-#     return redirect('view_shopping_cart')
+    return render(request, 'cart.html', context)
 
 
 def search_view(request, results=None):
@@ -241,7 +224,6 @@ razorpay_client = razorpay.Client(
 
 
 def checkout(request):
-    # Get the cart items for the logged-in user
     cart_items = CartItem.objects.filter(shopping_cart__user=request.user)
     if not cart_items.exists():
         messages.info(request, 'Add Item to cart')
@@ -251,12 +233,11 @@ def checkout(request):
     total_amount = sum(item.product.price for item in cart_items)
     # vat_amount = total_amount * 0.18
     # delivery_amount = 4.95
-    # Create a Razorpay Order
+
     razorpay_order = razorpay_client.order.create(dict(amount=total_amount*100,
                                                        currency='INR',
                                                        payment_capture='0'))
 
-    # order id of newly created order.
     razorpay_order_id = razorpay_order['id']
     callback_url = '/paymenthandler/'
     order, _ = Order.objects.get_or_create(
@@ -292,12 +273,10 @@ def checkout(request):
 @csrf_exempt
 def paymenthandler(request):
 
-    # only accept POST request.
     if request.method == "POST":
         print('hey this is you ')
         try:
 
-            # get the required parameters from post request.
             payment_id = request.POST.get('razorpay_payment_id', '')
             razorpay_order_id = request.POST.get('razorpay_order_id', '')
             signature = request.POST.get('razorpay_signature', '')
@@ -315,7 +294,6 @@ def paymenthandler(request):
             print(order.total_amount)
             if result is not None:
                 amount = int(order.total_amount * 100)
-
                 try:
                     cart_items = CartItem.objects.filter(
                         shopping_cart__user=request.user)
@@ -342,13 +320,9 @@ def paymenthandler(request):
                     # if there is an error while capturing payment.
                     return render(request, 'paymentFailure.html')
             else:
-
                 # if signature verification fails.
                 return render(request, 'paymentFailure.html')
         except:
-
-            # if we don't find the required parameters in POST data
             return HttpResponseBadRequest()
     else:
-       # if other than POST request is made.
         return HttpResponseBadRequest()
