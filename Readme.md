@@ -40,6 +40,17 @@ source env/bin/activate (max/linux)
 pip install -r requirements.txt
 ```
 
+### create .env file
+
+you can get the api key from razorpay site:\
+Tutorial: https://razorpay.com/docs/x/dashboard/api-keys/ \
+You should create a `.env` file uisng the details from razorpay and with the vaible i have mentioned below
+
+```bash
+RAZOR_KEY_ID = ''
+RAZOR_KEY_SECRET = ''
+```
+
 ### Running Migrations
 ```bash
 python manage.py migrate
