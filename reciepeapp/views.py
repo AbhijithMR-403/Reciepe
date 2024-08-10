@@ -43,19 +43,30 @@ def login(request):
     return render(request, 'login.html')
 
 
-def viewrecipe(request):
-    return render(request, 'upload.html')
+# def viewrecipe(request):
+#     return render(request, 'upload.html')
 
 
-def recipe_detail(request):
-    return render(request, 'recipeDetail.html')
+def recipe_detail(request, id):
+    recipe = get_object_or_404(Recipe, pk=id)
+    return render(request, 'recipeDetail.html', {'recipe': recipe})
 
 
 def sellrecipe(request):
     user = request.user
+    query = request.GET.get('q', '')
+
+    # Filter the user's recipes based on the search query
+    sell = Recipe.objects.filter(user__id=user.id)
+
+    if query:
+        sell = sell.filter(title__icontains=query)
+
     dict_sell = {
-        'sell': Recipe.objects.filter(user__id=user.id)
+        'sell': sell,
+        'query': query,
     }
+
     return render(request, 'sellrecipe.html', dict_sell)
 
 
@@ -94,7 +105,11 @@ def recipe_upload(request):
 
 def viewrecipe(request):
     user = request.user
+    query = request.GET.get('q', '')
+
     recipes = Recipe.objects.exclude(user__id=user.id)
+    if query:
+        recipes = recipes.filter(title__icontains=query)
     context = {
         'recipes': recipes,
     }

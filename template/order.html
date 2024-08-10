@@ -4,7 +4,7 @@
 
 {%block title%}
 
-Review
+My Order
 {% endblock %}
 
 {% block content %}
@@ -14,119 +14,40 @@ Review
 
 </head>
 <section class="categoriescards container flex">
-    <div class="filtercards flex">
-        {% for i in  orders%}
-        
+    <div class="">
+    <div class="row">
+
+        {% for order in  orders%}
+        <div class="col-md-4 col-sm-6 mb-4">
+
         <div class="tcard">
             <div class="tcarding">
-                <img src="/static/images/cheesepizza.jpg/" alt="">
+                <img src="{{order.product.image.url}}" alt="">
                 <span class="fa fa-star"></span>
 
             </div>
             <div class="tcardinfo flex">
-                <label class="tlabel">pizza</label>
-                <h2>Cheese Pizza</h2>
-                <div class="star-rating">
+                <!-- <label class="tlabel">pizza</label> -->
+                <h2>{{order.product.title}}</h2>
+                <!-- <div class="star-rating">
                     <span class="fa fa-star checked"></span>
                     <span class="fa fa-star checked"></span>
                     <span class="fa fa-star checked"></span>
                     <span class="fa fa-star checked"></span>
                     <span class="fa fa-star checked"></span>
-                </div>
-                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
+                </div> -->
+                <p>{{order.product.description}}</p>
                 <ul class="flex">
-                    <li><i class="fa-solid fa-user"></i>by</li>
-                    <li><i class="fa-regular fa-clock"></i>10 Mins</li>
-                    <li><i class="fa-solid fa-heart"></i>25 Like</li>
+                    <li><i class="fa-solid fa-user"></i>{{order.product.user}}</li>
+                    <li><i class="fa-regular fa-clock"></i>{{order.product.time}}</li>
                 </ul>
-                <a href="/" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a>
+                <a href="{% url 'recipe_detail_page' order.product.id %}" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a>
             </div>
 
+        </div>
         </div>
         {% endfor %}
-    
-        <div class="tcard">
-            <div class="tcarding">
-                <img src="/static/images/cookies-7.jpg/" alt="">
-                <span class="fa fa-star"></span>
-
-            </div>
-            <div class="tcardinfo flex">
-                <label class="tlabel">cookie</label>
-                <h2>Cookies</h2>
-                <div class="star-rating">
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                </div>
-                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
-                <ul class="flex">
-                    <li><i class="fa-solid fa-user"></i>by</li>
-                    <li><i class="fa-regular fa-clock"></i>10 Mins</li>
-                    <li><i class="fa-solid fa-heart"></i>25 Like</li>
-                </ul>
-                <a href="/" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-
-        </div>
-
-        <div class="tcard">
-            <div class="tcarding">
-                <img src="/static/images/steak-food.jpg/" alt="">
-                <span class="fa fa-star"></span>
-
-            </div>
-            <div class="tcardinfo flex">
-                <label class="tlabel">food</label>
-                <h2>Steak Food</h2>
-                <div class="star-rating">
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                </div>
-                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
-                <ul class="flex">
-                    <li><i class="fa-solid fa-user"></i>by</li>
-                    <li><i class="fa-regular fa-clock"></i>10 Mins</li>
-                    <li><i class="fa-solid fa-heart"></i>25 Like</li>
-                </ul>
-                <a href="/" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-
-        </div>
-
-        <div class="tcard">
-            <div class="tcarding">
-                <img src="/static/images/cookies-6.jpg/" alt="">
-                <span class="fa fa-star"></span>
-
-            </div>
-            <div class="tcardinfo flex">
-                <label class="tlabel">cookies</label>
-                <h2>Cookies</h2>
-                <div class="star-rating">
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                </div>
-                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
-                <ul class="flex">
-                    <li><i class="fa-solid fa-user"></i>by</li>
-                    <li><i class="fa-regular fa-clock"></i>10 Mins</li>
-                    <li><i class="fa-solid fa-heart"></i>25 Like</li>
-                </ul>
-                <a href="/" class="catecarbtn">Read More<i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-
-        </div>
-
-
+    </div>
     </div>
 
 </section>

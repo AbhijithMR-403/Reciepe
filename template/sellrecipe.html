@@ -14,10 +14,10 @@
 
 <div class="seachinput">
   <div class="container-xxl pt-4">
-    <form method="GET" action="{% url 'search' %}" class="mb-4 p-6">
+    <form method="GET" action="{% url 'sellrecipe' %}" class="mb-4 p-6">
       {% csrf_token %}
       <div class="input-group rounded">
-        <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+        <input type="search" class="form-control rounded" placeholder="Search" name="q" aria-label="Search" aria-describedby="search-addon" />
         <span class="input-group-text border-0" id="search-addon">
           <i class="fas fa-search"></i>
         </span>
